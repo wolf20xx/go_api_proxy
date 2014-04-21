@@ -15,9 +15,15 @@ func (c App) Index() revel.Result {
 	return c.Render()
 }
 
-func (c App) ApiProxy(url string) revel.Result {
+type ProxyQuery struct {
+    url string
+}
+
+func (c App) ApiProxy() revel.Result {
     revel.INFO.Println("ApiProxyTest")
-    resp, err := http.Get(url)
+    var pxyurl string
+    c.Params.Bind(&pxyurl,"pxyurl")
+    resp, err := http.Get(pxyurl)
     if err != nil {
         log.Fatal(err)
     }

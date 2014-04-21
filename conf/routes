@@ -5,7 +5,7 @@
 module:testrunner
 
 GET     /                                       App.Index
-GET     /api/proxy/:url                         App.ApiProxy
+GET     /api/proxy                         App.ApiProxy
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
