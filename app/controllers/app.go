@@ -36,18 +36,22 @@ func (c App) ApiProxy(pxyurl string) revel.Result {
 		c.FlashParams()
 		return c.RenderText("API Validation Errors Occur")
 	}
-	resp, err := http.Get(pxyurl)
+	ch := make(chan string)
+	go func() {
+		AsyncGetApi(pxyurl, ch)
+	}()
+	res := <-ch
+
+	revel.INFO.Println(res)
+	c.Response.ContentType = "application/json"
+	return c.RenderText(res)
+}
+
+func AsyncGetApi(url string, ch chan string) {
+	resp, err := http.Get(url)
 	FatalLog(err)
 	defer resp.Body.Close()
-	revel.INFO.Println(resp.Body)
-	//htmtexts := []struct {
-	//    Text string
-	//}{}
-	revel.INFO.Println(resp)
-	//err = json.NewDecoder(ret.Body).Decode(&htmtexts)
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	FatalLog(err)
-	revel.INFO.Println(string(bodyBytes))
-	c.Response.ContentType = "application/json"
-	return c.RenderText(string(bodyBytes))
+	ch <- string(bodyBytes)
 }
